@@ -20,7 +20,7 @@ public class Prescription {
         this.usageInstructions = usageInstructions;
     }
 
-    // Getters
+    // Getters (no setters added to keep immutable where possible, supporting OCP)
     public String getPatientId() {
         return patientId;
     }

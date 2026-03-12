@@ -4,14 +4,14 @@ public class Doctor extends Person {
     private String department;
     private String joiningDate;
     private String bmdcReg;
-	private String password;
-	
-    public Doctor(String id, String name, String gender, String mobileNo, String department, String joiningDate, String bmdcReg, String password) {
-        super(id,name,gender,mobileNo);
+    private String password;
+
+    public Doctor(String id, String name, String mobileNo, String gender, String department, String joiningDate, String bmdcReg, String password) {
+        super(id, name, mobileNo, gender);
         this.department = department;
         this.joiningDate = joiningDate;
         this.bmdcReg = bmdcReg;
-		this.password = password;
+        this.password = password;
     }
 
     public String getDepartment() {
@@ -30,19 +30,19 @@ public class Doctor extends Person {
         this.joiningDate = joiningDate;
     }
 
-    public String getPassword() {
-		return password;
-	}
-	
-	public void setPassword(String password){
-		this.password = password;
-	}
-	
     public String getBmdcReg() {
         return bmdcReg;
     }
 
     public void setBmdcReg(String bmdcReg) {
         this.bmdcReg = bmdcReg;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

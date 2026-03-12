@@ -1,44 +1,39 @@
 package Classes;
 
 public class Patient extends Person {
-	private String age;
-	private String address;
+    private String age;
+    private String address;
     private String appointedDoctor;
     private String room;
     private String diagnosis;
-	private String deposit;
+    private String deposit;
 
-    
-    public Patient( String id, String name, String mobileNo, String gender, String age, String address, String appointedDoctor, String room, String diagnosis,String deposit) {
-        super(id,name,mobileNo,gender);
-		
-		this.age = age;
-		this.address = 	address;
+    public Patient(String id, String name, String mobileNo, String gender, String age, String address, String appointedDoctor, String room, String diagnosis, String deposit) {
+        super(id, name, mobileNo, gender);
+        this.age = age;
+        this.address = address;
         this.appointedDoctor = appointedDoctor;
         this.room = room;
         this.diagnosis = diagnosis;
-		this.deposit = deposit;
+        this.deposit = deposit;
     }
 
-  
-	public String getAge() {
+    public String getAge() {
         return age;
     }
 
     public void setAge(String age) {
         this.age = age;
     }
-	
-	
-	public String getAddress() {
+
+    public String getAddress() {
         return address;
     }
 
     public void setAddress(String address) {
         this.address = address;
     }
-	
-	
+
     public String getAppointedDoctor() {
         return appointedDoctor;
     }
@@ -62,17 +57,12 @@ public class Patient extends Person {
     public void setDiagnosis(String diagnosis) {
         this.diagnosis = diagnosis;
     }
-	
-	public String getDeposit() {
+
+    public String getDeposit() {
         return deposit;
     }
 
     public void setDeposit(String deposit) {
         this.deposit = deposit;
     }
-	
-	
-	
-	
 }
- 

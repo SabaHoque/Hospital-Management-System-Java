@@ -8,18 +8,23 @@ public class PrescriptionList {
     public static int pCount = 0;
 
     public PrescriptionList() {
+        loadPrescriptionsFromFile();
+    }
+
+    // Extracted method for loading prescriptions (SRP: isolates file reading)
+    private void loadPrescriptionsFromFile() {
         try {
             File file = new File("Files/prescriptions.txt");
             Scanner sc = new Scanner(file);
             while (sc.hasNextLine()) {
-                String patientId = sc.nextLine().split(": ")[1];  // Patient ID
-                String patientName = sc.nextLine().split(": ")[1];  // Patient Name
-                String diagnosis = sc.nextLine().split(": ")[1];  // Diagnosis
-                String doctorName = sc.nextLine().split(": ")[1];  // Doctor's Name
-                String medicineName = sc.nextLine().split(": ")[1];  // Medicine Name
-                String dosage = sc.nextLine().split(": ")[1];  // Dosage
-                String usageInstructions = sc.nextLine().split(": ")[1];  // Usage Instructions
-                if (sc.hasNextLine()) sc.nextLine();  // Skip 
+                String patientId = sc.nextLine().split(": ")[1];
+                String patientName = sc.nextLine().split(": ")[1];
+                String diagnosis = sc.nextLine().split(": ")[1];
+                String doctorName = sc.nextLine().split(": ")[1];
+                String medicineName = sc.nextLine().split(": ")[1];
+                String dosage = sc.nextLine().split(": ")[1];
+                String usageInstructions = sc.nextLine().split(": ")[1];
+                if (sc.hasNextLine()) sc.nextLine(); // Skip empty line
 
                 Prescription p = new Prescription(patientId, patientName, diagnosis, doctorName, medicineName, dosage, usageInstructions);
                 prescriptionList[pCount] = p;
@@ -32,13 +37,16 @@ public class PrescriptionList {
     }
 
     public void addPrescription(Prescription p) {
-        try {
-            prescriptionList[pCount] = p;
-            pCount++;
-        } catch (Exception ex) {
-            System.out.println("Array full");
+        if (pCount >= prescriptionList.length) {
+            throw new ArrayIndexOutOfBoundsException("Array full");
         }
+        prescriptionList[pCount] = p;
+        pCount++;
+        savePrescriptionToFile(p);
+    }
 
+    // Extracted method for saving prescription (SRP: isolates file writing)
+    private void savePrescriptionToFile(Prescription p) {
         String prescriptionDetails = "Patient ID: " + p.getPatientId() + "\n" +
                                      "Patient Name: " + p.getPatientName() + "\n" +
                                      "Diagnosis: " + p.getDiagnosis() + "\n" +
@@ -46,7 +54,6 @@ public class PrescriptionList {
                                      "Medicine Name: " + p.getMedicineName() + "\n" +
                                      "Dosage: " + p.getDosage() + "\n" +
                                      "Usage Instructions: " + p.getUsageInstructions() + "\n\n";
-
         try {
             FileWriter fw = new FileWriter("Files/prescriptions.txt", true);
             fw.write(prescriptionDetails);

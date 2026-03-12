@@ -1,208 +1,170 @@
 package Classes;
 import Interfaces.*;
-
 import java.io.*;
 import java.util.Scanner;
 
 public class PList implements IPList {
-	public Patient patientList[] = new Patient[100];
-	public static int pCount = 0;
-	
-	public PList(){
-		try{
-		File file = new File("Files/PatientList.txt");
-		Scanner sc = new Scanner(file);
-			while(sc.hasNext()){
-				String line1 = sc.nextLine();  //pid
-				String line2 = sc.nextLine();  //name
-				String line3 = sc.nextLine();  //mobile
-				String line4 = sc.nextLine();  //gender
-				String line5 = sc.nextLine();  //age
-				String line6 = sc.nextLine();   //address
-				String line7 = sc.nextLine();  //appDoctor
-				String line8 = sc.nextLine();  //room
-				String line9 = sc.nextLine();  //diagnosic
-				String line10 = sc.nextLine();  //deposit
-				String line11= sc.nextLine();  
-				
-				
-				Patient p = new Patient (line1, line2, line3, line4, line5, line6, line7, line8, line9, line10);
-				patientList[pCount] = p;
-				pCount++;	
-			}
-		sc.close();		
-		
-		}catch(Exception ex){
-			System.out.println("File not found.");
-			return;
-			
-		}
-	}
-	
-	public void addPatient(Patient p){
+    public Patient[] patientList = new Patient[100];
+    public static int pCount = 0;
 
-		try{
-			patientList[pCount] = p;
-			pCount++;
-		}catch (Exception ex){
-				System.out.println("Array full");	
-		}
-			
-		String patientDatiels = p.getId() + "\n" + p.getName() + "\n" +
-								p.getMobileNo() + "\n" + p.getGender() + "\n" +
-								p.getAge() + "\n" + p.getAddress() + "\n" +
-								p.getAppointedDoctor() + "\n" + p.getRoom() + "\n" +
-								p.getDiagnosis() + "\n" + p.getDeposit() + "\n" +"\n";
-			
-		try{
-			FileWriter fw = new FileWriter("Files/PatientList.txt",true);
-			fw.write(patientDatiels);
-			fw.close();
-		}catch(Exception ex){
-				System.out.println(ex);
-		}
-			
-			
-			
-	}
-	
-	public int searchPatient(String id){
-		int index = -1;
-		for(int i = 0; i<pCount; i++){
-			if(patientList[i]!= null && patientList[i].getId().equals(id)){
-			   index = i;
-			   break;
-			}
-		}
-		return index;
-	}
-	
-	public Patient getPatient(int index){
-		return patientList[index];
-	}
-	
-	public void deletePatient(Patient p){
+    public PList() {
+        loadPatientsFromFile();
+    }
 
-		for( int i = 0; i<pCount; i++){
-			if(patientList[i] == p){
-				for(int j = i; j<pCount-1; j++){
-					patientList[j] = patientList[j+1];
-				}
-				pCount--;
-				patientList[pCount] = null;
-				break;
-			}
-		}
-		
+    // Extracted for SRP: File loading isolated
+    private void loadPatientsFromFile() {
+        try {
+            File file = new File("Files/PatientList.txt");
+            Scanner sc = new Scanner(file);
+            while (sc.hasNext()) {
+                String id = sc.nextLine();
+                String name = sc.nextLine();
+                String mobileNo = sc.nextLine();
+                String gender = sc.nextLine();
+                String age = sc.nextLine();
+                String address = sc.nextLine();
+                String appointedDoctor = sc.nextLine();
+                String room = sc.nextLine();
+                String diagnosis = sc.nextLine();
+                String deposit = sc.nextLine();
+                if (sc.hasNextLine()) sc.nextLine(); // Skip empty line
 
-		String patientToDelete = p.getId() + "\n" + p.getName() + "\n" +
-								 p.getMobileNo() + "\n" + p.getGender() + "\n" +
-								 p.getAge() + "\n" + p.getAddress() + "\n" +
-								 p.getAppointedDoctor() + "\n" + p.getRoom() + "\n" +
-								 p.getDiagnosis() + "\n" + p.getDeposit() + "\n" ;
-		
-		try{
-			String filepath = "Files/PatientList.txt";
-			File originalFile = new File(filepath);
-			
-			String newDetails = "";
-			Scanner sc = new Scanner(originalFile);
-			while(sc.hasNext()){
-				String readUser = sc.nextLine() + "\n";
-					   readUser += sc.nextLine() + "\n";
-					   readUser += sc.nextLine() + "\n";
-					   readUser += sc.nextLine() + "\n";
-					   readUser += sc.nextLine() + "\n";
-					   readUser += sc.nextLine() + "\n";
-					   readUser += sc.nextLine() + "\n";
-					   readUser += sc.nextLine() + "\n";
-					   readUser += sc.nextLine() + "\n";
-					   readUser += sc.nextLine() + "\n";
-					   readUser += sc.nextLine();
-					   
-				System.out.println(readUser);
-				System.out.println(patientToDelete);
-				
-				if(readUser.equals(patientToDelete)){
-					System.out.println("Equal, so deleting");
-					continue; 
-				}
-				System.out.println("Writing");
-				newDetails += readUser + "\n";
-				
-			} sc.close();
-			FileWriter fw = new FileWriter(filepath);
-			fw.write(newDetails);
-			fw.close();
-			
-		} catch (Exception ex){
-			System.out.println(ex);
-		}
-		
-	}
-	
-	public void updatePatient(String patientToUpdate, Patient updatedPatient){
-		
-		String updatedDetails = updatedPatient.getId() + "\n" +
-								updatedPatient.getName() + "\n" +
-								updatedPatient.getMobileNo() + "\n" +
-								updatedPatient.getGender() + "\n" +
-								updatedPatient.getAge() + "\n" +
-								updatedPatient.getAddress() + "\n" +
-								updatedPatient.getAppointedDoctor() + "\n" +
-								updatedPatient.getRoom() + "\n"+
-								updatedPatient.getDiagnosis() + "\n" +
-								updatedPatient.getDeposit() + "\n";
-								
-		System.out.println("Want to update:\n "+ updatedDetails+ "\n");
-		System.out.println("----------------------------------------");
-								
-		//Update in file						
-		try{
-			String filepath = "Files/PatientList.txt";
-			File originalFile = new File(filepath);
-			
-			String newDetails = "";
-			Scanner sc = new Scanner(originalFile);
-			while(sc.hasNext()){
-				String readUser = sc.nextLine() + "\n";
-					   readUser += sc.nextLine() + "\n";
-					   readUser += sc.nextLine() + "\n";
-					   readUser += sc.nextLine() + "\n";
-					   readUser += sc.nextLine() + "\n";
-					   readUser += sc.nextLine() + "\n";
-					   readUser += sc.nextLine() + "\n";
-					   readUser += sc.nextLine() + "\n";
-					   readUser += sc.nextLine() + "\n";
-					   readUser += sc.nextLine() + "\n";
-					   readUser += sc.nextLine();
-					   
-				System.out.println("read:\n "+ readUser+"\n-----------------");
-				System.out.println("updt:\n "+ patientToUpdate +"\n-----------------");
-				
-				if(readUser.equals(patientToUpdate)){
-					System.out.println("Updated");
-					newDetails += updatedDetails + "\n";
-				} else{
-					System.out.println("Writing");
-					newDetails += readUser + "\n";
-				}	
-			} sc.close();
-			FileWriter fw = new FileWriter(filepath);
-			fw.write(newDetails);
-			fw.close();
-			
-		} catch (Exception ex){
-			System.out.println(ex);
-		}							
-	}
-		
+                Patient p = new Patient(id, name, mobileNo, gender, age, address, appointedDoctor, room, diagnosis, deposit);
+                patientList[pCount] = p;
+                pCount++;
+            }
+            sc.close();
+        } catch (Exception ex) {
+            System.out.println("File not found.");
+        }
+    }
+
+    public void addPatient(Patient p) {
+        if (pCount >= patientList.length) {
+            throw new ArrayIndexOutOfBoundsException("Array full");
+        }
+        patientList[pCount] = p;
+        pCount++;
+        savePatientToFile(p);
+    }
+
+    // Extracted for SRP: File saving isolated
+    private void savePatientToFile(Patient p) {
+        String patientDetails = p.getId() + "\n" + p.getName() + "\n" +
+                                p.getMobileNo() + "\n" + p.getGender() + "\n" +
+                                p.getAge() + "\n" + p.getAddress() + "\n" +
+                                p.getAppointedDoctor() + "\n" + p.getRoom() + "\n" +
+                                p.getDiagnosis() + "\n" + p.getDeposit() + "\n\n";
+        try {
+            FileWriter fw = new FileWriter("Files/PatientList.txt", true);
+            fw.write(patientDetails);
+            fw.close();
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+    }
+
+    public int searchPatient(String id) {
+        int index = -1;
+        for (int i = 0; i < pCount; i++) {
+            if (patientList[i] != null && patientList[i].getId().equals(id)) {
+                index = i;
+                break;
+            }
+        }
+        return index;
+    }
+
+    public Patient getPatient(int index) {
+        return patientList[index];
+    }
+
+    public void deletePatient(Patient p) {
+        for (int i = 0; i < pCount; i++) {
+            if (patientList[i] == p) {
+                for (int j = i; j < pCount - 1; j++) {
+                    patientList[j] = patientList[j + 1];
+                }
+                pCount--;
+                patientList[pCount] = null;
+                break;
+            }
+        }
+        removePatientFromFile(p);
+    }
+
+    // Extracted for SRP: File deletion isolated
+    private void removePatientFromFile(Patient p) {
+        String patientToDelete = p.getId() + "\n" + p.getName() + "\n" +
+                                 p.getMobileNo() + "\n" + p.getGender() + "\n" +
+                                 p.getAge() + "\n" + p.getAddress() + "\n" +
+                                 p.getAppointedDoctor() + "\n" + p.getRoom() + "\n" +
+                                 p.getDiagnosis() + "\n" + p.getDeposit() + "\n\n";
+        try {
+            String filepath = "Files/PatientList.txt";
+            File originalFile = new File(filepath);
+            String newDetails = "";
+            Scanner sc = new Scanner(originalFile);
+            while (sc.hasNext()) {
+                String readUser = readPatientBlock(sc);
+                if (readUser.equals(patientToDelete)) {
+                    continue;
+                }
+                newDetails += readUser;
+            }
+            sc.close();
+            FileWriter fw = new FileWriter(filepath);
+            fw.write(newDetails);
+            fw.close();
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+    }
+
+    // Helper method to read a patient block (refactored for readability)
+    private String readPatientBlock(Scanner sc) {
+        String readUser = sc.nextLine() + "\n";
+        for (int i = 0; i < 9; i++) {
+            if (sc.hasNextLine()) readUser += sc.nextLine() + "\n";
+        }
+        return readUser;
+    }
+
+    public void updatePatient(String patientToUpdate, Patient updatedPatient) {
+        updatePatientInFile(patientToUpdate, updatedPatient);
+    }
+
+    // Extracted for SRP: File update isolated
+    private void updatePatientInFile(String patientToUpdate, Patient updatedPatient) {
+        String updatedDetails = updatedPatient.getId() + "\n" +
+                                updatedPatient.getName() + "\n" +
+                                updatedPatient.getMobileNo() + "\n" +
+                                updatedPatient.getGender() + "\n" +
+                                updatedPatient.getAge() + "\n" +
+                                updatedPatient.getAddress() + "\n" +
+                                updatedPatient.getAppointedDoctor() + "\n" +
+                                updatedPatient.getRoom() + "\n" +
+                                updatedPatient.getDiagnosis() + "\n" +
+                                updatedPatient.getDeposit() + "\n\n";
+        try {
+            String filepath = "Files/PatientList.txt";
+            File originalFile = new File(filepath);
+            String newDetails = "";
+            Scanner sc = new Scanner(originalFile);
+            while (sc.hasNext()) {
+                String readUser = readPatientBlock(sc);
+                if (readUser.equals(patientToUpdate + "\n")) { // Adjust for extra newline if needed
+                    newDetails += updatedDetails;
+                } else {
+                    newDetails += readUser;
+                }
+            }
+            sc.close();
+            FileWriter fw = new FileWriter(filepath);
+            fw.write(newDetails);
+            fw.close();
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+    }
 }
-		
-		
-		
-
-	
-	
-	
- 

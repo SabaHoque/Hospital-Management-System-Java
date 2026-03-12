@@ -1,21 +1,24 @@
 package Classes;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class AppointmentList {
-    public Appointment[] appointmentList = new Appointment[100];
-    public static int appCount = 0;
+    private static final String APPOINTMENT_FILE_PATH = "Files/AppointmentList.txt";
+    private final List<Appointment> appointmentList = new ArrayList<>();
 
     public AppointmentList() {
         loadAppointmentsFromFile();
     }
 
-    // Extracted for SRP: File loading
     private void loadAppointmentsFromFile() {
-        try {
-            File file = new File("Files/AppointmentList.txt");
-            Scanner sc = new Scanner(file);
+        File file = new File(APPOINTMENT_FILE_PATH);
+        if (!file.exists()) {
+            return;
+        }
+        try (Scanner sc = new Scanner(file)) {
             while (sc.hasNext()) {
                 String appID = sc.nextLine();
                 String patientName = sc.nextLine();
@@ -23,28 +26,23 @@ public class AppointmentList {
                 String doctorName = sc.nextLine();
                 String appDate = sc.nextLine();
                 String appTime = sc.nextLine();
-                if (sc.hasNextLine()) sc.nextLine(); // Skip empty line
+                if (sc.hasNextLine()) sc.nextLine();
 
                 Appointment app = new Appointment(appID, patientName, diagnosis, doctorName, appDate, appTime);
-                appointmentList[appCount] = app;
-                appCount++;
+                appointmentList.add(app);
             }
-            sc.close();
-        } catch (Exception ex) {
-            System.out.println("File not found.");
+        } catch (FileNotFoundException ex) {
+            // Empty list
+        } catch (IOException ex) {
+            throw new RuntimeException("Error loading appointments", ex);
         }
     }
 
     public void addAppointment(Appointment app) {
-        if (appCount >= appointmentList.length) {
-            throw new ArrayIndexOutOfBoundsException("Array full");
-        }
-        appointmentList[appCount] = app;
-        appCount++;
+        appointmentList.add(app);
         saveAppointmentToFile(app);
     }
 
-    // Extracted for SRP: File saving
     private void saveAppointmentToFile(Appointment app) {
         String appointmentDetails = app.getAppId() + "\n" +
                                     app.getPatientName() + "\n" +
@@ -52,113 +50,106 @@ public class AppointmentList {
                                     app.getDoctorName() + "\n" +
                                     app.getAppDate() + "\n" +
                                     app.getAppTime() + "\n\n";
-        try {
-            FileWriter fw = new FileWriter("Files/AppointmentList.txt", true);
+        try (FileWriter fw = new FileWriter(APPOINTMENT_FILE_PATH, true)) {
             fw.write(appointmentDetails);
-            fw.close();
-        } catch (Exception ex) {
-            System.out.println(ex);
+        } catch (IOException ex) {
+            throw new RuntimeException("Error saving appointment", ex);
         }
     }
 
     public int searchAppointment(String appId) {
-        int index = -1;
-        for (int i = 0; i < appCount; i++) {
-            if (appointmentList[i] != null && appointmentList[i].getAppId().equals(appId)) {
-                index = i;
-                break;
+        for (int i = 0; i < appointmentList.size(); i++) {
+            if (appointmentList.get(i).getAppId().equals(appId)) {
+                return i;
             }
         }
-        return index;
+        return -1;
     }
 
     public Appointment getAppointment(int index) {
-        return appointmentList[index];
+        if (index < 0 || index >= appointmentList.size()) {
+            return null;
+        }
+        return appointmentList.get(index);
     }
 
     public void deleteAppointment(Appointment app) {
-        for (int i = 0; i < appCount; i++) {
-            if (appointmentList[i] == app) {
-                for (int j = i; j < appCount - 1; j++) {
-                    appointmentList[j] = appointmentList[j + 1];
-                }
-                appCount--;
-                appointmentList[appCount] = null;
-                break;
-            }
-        }
+        appointmentList.remove(app);
         removeAppointmentFromFile(app);
     }
 
-    // Extracted for SRP: File deletion
     private void removeAppointmentFromFile(Appointment app) {
-        String appointmentToDelete = app.getAppId() + "\n" +
-                                     app.getPatientName() + "\n" +
-                                     app.getDiagnosis() + "\n" +
-                                     app.getDoctorName() + "\n" +
-                                     app.getAppDate() + "\n" +
-                                     app.getAppTime() + "\n\n";
+        String appointmentToDelete = buildAppointmentFileString(app);
         try {
-            String filepath = "Files/AppointmentList.txt";
-            File originalFile = new File(filepath);
-            String newDetails = "";
-            Scanner sc = new Scanner(originalFile);
-            while (sc.hasNext()) {
-                String readUser = readAppointmentBlock(sc);
-                if (readUser.equals(appointmentToDelete)) {
-                    continue;
+            List<String> lines = readAllLines(APPOINTMENT_FILE_PATH);
+            StringBuilder newContent = new StringBuilder();
+            StringBuilder currentBlock = new StringBuilder();
+            for (String line : lines) {
+                currentBlock.append(line).append("\n");
+                if (currentBlock.toString().endsWith("\n\n")) {
+                    if (!currentBlock.toString().equals(appointmentToDelete)) {
+                        newContent.append(currentBlock);
+                    }
+                    currentBlock = new StringBuilder();
                 }
-                newDetails += readUser;
             }
-            sc.close();
-            FileWriter fw = new FileWriter(filepath);
-            fw.write(newDetails);
-            fw.close();
-        } catch (Exception ex) {
-            System.out.println(ex);
+            writeAllText(APPOINTMENT_FILE_PATH, newContent.toString());
+        } catch (IOException ex) {
+            throw new RuntimeException("Error deleting appointment from file", ex);
         }
     }
 
-    // Helper for reading block
-    private String readAppointmentBlock(Scanner sc) {
-        String readUser = sc.nextLine() + "\n";
-        for (int i = 0; i < 5; i++) {
-            if (sc.hasNextLine()) readUser += sc.nextLine() + "\n";
-        }
-        return readUser;
+    private String buildAppointmentFileString(Appointment app) {
+        return app.getAppId() + "\n" +
+               app.getPatientName() + "\n" +
+               app.getDiagnosis() + "\n" +
+               app.getDoctorName() + "\n" +
+               app.getAppDate() + "\n" +
+               app.getAppTime() + "\n\n";
     }
 
     public void updateAppointment(String appointmentToUpdate, Appointment updatedAppointment) {
         updateAppointmentInFile(appointmentToUpdate, updatedAppointment);
     }
 
-    // Extracted for SRP: File update
     private void updateAppointmentInFile(String appointmentToUpdate, Appointment updatedAppointment) {
-        String updatedDetails = updatedAppointment.getAppId() + "\n" +
-                                updatedAppointment.getPatientName() + "\n" +
-                                updatedAppointment.getDiagnosis() + "\n" +
-                                updatedAppointment.getDoctorName() + "\n" +
-                                updatedAppointment.getAppDate() + "\n" +
-                                updatedAppointment.getAppTime() + "\n\n";
+        String updatedDetails = buildAppointmentFileString(updatedAppointment);
         try {
-            String filepath = "Files/AppointmentList.txt";
-            File originalFile = new File(filepath);
-            String newDetails = "";
-            Scanner sc = new Scanner(originalFile);
-            while (sc.hasNext()) {
-                String readUser = readAppointmentBlock(sc);
-                if (readUser.equals(appointmentToUpdate)) {
-                    newDetails += updatedDetails;
-                } else {
-                    newDetails += readUser;
+            List<String> lines = readAllLines(APPOINTMENT_FILE_PATH);
+            StringBuilder newContent = new StringBuilder();
+            StringBuilder currentBlock = new StringBuilder();
+            for (String line : lines) {
+                currentBlock.append(line).append("\n");
+                if (currentBlock.toString().endsWith("\n\n")) {
+                    if (currentBlock.toString().equals(appointmentToUpdate)) {
+                        newContent.append(updatedDetails);
+                    } else {
+                        newContent.append(currentBlock);
+                    }
+                    currentBlock = new StringBuilder();
                 }
             }
-            sc.close();
-            FileWriter fw = new FileWriter(filepath);
-            fw.write(newDetails);
-            fw.close();
-        } catch (Exception ex) {
-            System.out.println(ex);
+            writeAllText(APPOINTMENT_FILE_PATH, newContent.toString());
+        } catch (IOException ex) {
+            throw new RuntimeException("Error updating appointment in file", ex);
+        }
+    }
+
+    // Helpers
+    private List<String> readAllLines(String path) throws IOException {
+        List<String> lines = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                lines.add(line);
+            }
+        }
+        return lines;
+    }
+
+    private void writeAllText(String path, String content) throws IOException {
+        try (FileWriter fw = new FileWriter(path)) {
+            fw.write(content);
         }
     }
 }

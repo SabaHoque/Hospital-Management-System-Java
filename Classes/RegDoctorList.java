@@ -1,21 +1,24 @@
 package Classes;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class RegDoctorList {
-    public Doctor[] doctorList = new Doctor[100];
-    public static int doctorCount = 0;
+    private static final String DOCTOR_FILE_PATH = "Files/DoctorList.txt";
+    private final List<Doctor> doctorList = new ArrayList<>();
 
     public RegDoctorList() {
         loadDoctorsFromFile();
     }
 
-    // Extracted method for loading doctors (SRP: separates file reading from class initialization)
     private void loadDoctorsFromFile() {
-        try {
-            File file = new File("Files/DoctorList.txt");
-            Scanner sc = new Scanner(file);
+        File file = new File(DOCTOR_FILE_PATH);
+        if (!file.exists()) {
+            return; // Silently handle missing file, assume empty list
+        }
+        try (Scanner sc = new Scanner(file)) {
             while (sc.hasNext()) {
                 String id = sc.nextLine();
                 String name = sc.nextLine();
@@ -28,64 +31,59 @@ public class RegDoctorList {
                 if (sc.hasNextLine()) sc.nextLine(); // Skip extra newline
 
                 Doctor d = new Doctor(id, name, mobileNo, gender, department, joiningDate, bmdcReg, password);
-                doctorList[doctorCount] = d;
-                doctorCount++;
+                doctorList.add(d);
             }
-            sc.close();
-        } catch (Exception ex) {
-            System.out.println("File not found.");
+        } catch (FileNotFoundException ex) {
+            // Log or handle appropriately; for now, empty list
+        } catch (IOException ex) {
+            throw new RuntimeException("Error loading doctors", ex);
         }
     }
 
     public void addDoctor(Doctor d) {
-        doctorList[doctorCount] = d;
-        doctorCount++;
+        doctorList.add(d);
         saveDoctorToFile(d);
     }
 
-    // Extracted method for saving doctor (SRP: separates file writing from adding logic)
     private void saveDoctorToFile(Doctor d) {
         String drDetails = d.getId() + "\n" + d.getName() + "\n" + d.getMobileNo() + "\n" + d.getGender() + "\n" +
                            d.getDepartment() + "\n" + d.getJoiningDate() + "\n" + d.getBmdcReg() + "\n" +
-                           d.getPassword() + "\n" + "\n";
-        try {
-            FileWriter fw = new FileWriter("Files/DoctorList.txt", true);
+                           d.getPassword() + "\n\n";
+        try (FileWriter fw = new FileWriter(DOCTOR_FILE_PATH, true)) {
             fw.write(drDetails);
-            fw.close();
-        } catch (Exception ex) {
-            System.out.println(ex);
+        } catch (IOException ex) {
+            throw new RuntimeException("Error saving doctor", ex);
         }
     }
 
     public int doctorExists(String name) {
-        int index = -1;
-        for (int i = 0; i < doctorCount; i++) {
-            if (doctorList[i] != null && doctorList[i].getName().equals(name)) {
-                index = i;
-                break;
+        for (int i = 0; i < doctorList.size(); i++) {
+            if (doctorList.get(i).getName().equals(name)) {
+                return i;
             }
         }
-        return index;
+        return -1;
     }
 
     public Doctor checkPassword(int index, String pass) {
-        Doctor d = null;
-        if (doctorList[index].getPassword().equals(pass)) {
-            d = doctorList[index];
+        if (index < 0 || index >= doctorList.size()) {
+            return null;
         }
-        return d;
+        Doctor d = doctorList.get(index);
+        return d.getPassword().equals(pass) ? d : null;
     }
 
     public Doctor getDoctor(int index) {
-        return doctorList[index];
+        if (index < 0 || index >= doctorList.size()) {
+            return null;
+        }
+        return doctorList.get(index);
     }
 
     public String[] getDoctorNames() {
-        String[] doctorNames = new String[doctorCount];
-        for (int i = 0; i < doctorCount; i++) {
-            if (doctorList[i] != null) {
-                doctorNames[i] = "Dr. " + doctorList[i].getName();
-            }
+        String[] doctorNames = new String[doctorList.size()];
+        for (int i = 0; i < doctorList.size(); i++) {
+            doctorNames[i] = "Dr. " + doctorList.get(i).getName();
         }
         return doctorNames;
     }

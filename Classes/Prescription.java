@@ -1,15 +1,14 @@
 package Classes;
 
 public class Prescription {
-    private String patientId;
-    private String patientName;
-    private String diagnosis;
-    private String doctorName;
-    private String medicineName;
-    private String dosage;
-    private String usageInstructions;
+    private final String patientId;
+    private final String patientName;
+    private final String diagnosis;
+    private final String doctorName;
+    private final String medicineName;
+    private final String dosage;
+    private final String usageInstructions;
 
-    // Constructor
     public Prescription(String patientId, String patientName, String diagnosis, String doctorName, String medicineName, String dosage, String usageInstructions) {
         this.patientId = patientId;
         this.patientName = patientName;
@@ -20,7 +19,6 @@ public class Prescription {
         this.usageInstructions = usageInstructions;
     }
 
-    // Getters (no setters added to keep immutable where possible, supporting OCP)
     public String getPatientId() {
         return patientId;
     }

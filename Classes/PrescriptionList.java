@@ -1,51 +1,51 @@
 package Classes;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class PrescriptionList {
-    public Prescription[] prescriptionList = new Prescription[100];
-    public static int pCount = 0;
+    private static final String PRESCRIPTION_FILE_PATH = "Files/prescriptions.txt";
+    private final List<Prescription> prescriptionList = new ArrayList<>();
 
     public PrescriptionList() {
         loadPrescriptionsFromFile();
     }
 
-    // Extracted method for loading prescriptions (SRP: isolates file reading)
     private void loadPrescriptionsFromFile() {
-        try {
-            File file = new File("Files/prescriptions.txt");
-            Scanner sc = new Scanner(file);
+        File file = new File(PRESCRIPTION_FILE_PATH);
+        if (!file.exists()) {
+            return;
+        }
+        try (Scanner sc = new Scanner(file)) {
             while (sc.hasNextLine()) {
-                String patientId = sc.nextLine().split(": ")[1];
-                String patientName = sc.nextLine().split(": ")[1];
-                String diagnosis = sc.nextLine().split(": ")[1];
-                String doctorName = sc.nextLine().split(": ")[1];
-                String medicineName = sc.nextLine().split(": ")[1];
-                String dosage = sc.nextLine().split(": ")[1];
-                String usageInstructions = sc.nextLine().split(": ")[1];
-                if (sc.hasNextLine()) sc.nextLine(); // Skip empty line
+                String patientId = sc.nextLine().split(": ", 2)[1];
+                String patientName = sc.nextLine().split(": ", 2)[1];
+                String diagnosis = sc.nextLine().split(": ", 2)[1];
+                String doctorName = sc.nextLine().split(": ", 2)[1];
+                String medicineName = sc.nextLine().split(": ", 2)[1];
+                String dosage = sc.nextLine().split(": ", 2)[1];
+                String usageInstructions = sc.nextLine().split(": ", 2)[1];
+                if (sc.hasNextLine()) sc.nextLine();
 
                 Prescription p = new Prescription(patientId, patientName, diagnosis, doctorName, medicineName, dosage, usageInstructions);
-                prescriptionList[pCount] = p;
-                pCount++;
+                prescriptionList.add(p);
             }
-            sc.close();
-        } catch (Exception ex) {
-            System.out.println("File not found or error reading file.");
+        } catch (FileNotFoundException ex) {
+            // Empty list
+        } catch (IOException ex) {
+            throw new RuntimeException("Error loading prescriptions", ex);
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            throw new RuntimeException("Invalid file format", ex);
         }
     }
 
     public void addPrescription(Prescription p) {
-        if (pCount >= prescriptionList.length) {
-            throw new ArrayIndexOutOfBoundsException("Array full");
-        }
-        prescriptionList[pCount] = p;
-        pCount++;
+        prescriptionList.add(p);
         savePrescriptionToFile(p);
     }
 
-    // Extracted method for saving prescription (SRP: isolates file writing)
     private void savePrescriptionToFile(Prescription p) {
         String prescriptionDetails = "Patient ID: " + p.getPatientId() + "\n" +
                                      "Patient Name: " + p.getPatientName() + "\n" +
@@ -54,27 +54,26 @@ public class PrescriptionList {
                                      "Medicine Name: " + p.getMedicineName() + "\n" +
                                      "Dosage: " + p.getDosage() + "\n" +
                                      "Usage Instructions: " + p.getUsageInstructions() + "\n\n";
-        try {
-            FileWriter fw = new FileWriter("Files/prescriptions.txt", true);
+        try (FileWriter fw = new FileWriter(PRESCRIPTION_FILE_PATH, true)) {
             fw.write(prescriptionDetails);
-            fw.close();
-        } catch (Exception ex) {
-            System.out.println(ex);
+        } catch (IOException ex) {
+            throw new RuntimeException("Error saving prescription", ex);
         }
     }
 
     public int searchPrescription(String patientId) {
-        int index = -1;
-        for (int i = 0; i < pCount; i++) {
-            if (prescriptionList[i] != null && prescriptionList[i].getPatientId().equalsIgnoreCase(patientId)) {
-                index = i;
-                break;
+        for (int i = 0; i < prescriptionList.size(); i++) {
+            if (prescriptionList.get(i).getPatientId().equalsIgnoreCase(patientId)) {
+                return i;
             }
         }
-        return index;
+        return -1;
     }
 
     public Prescription getPrescription(int index) {
-        return prescriptionList[index];
+        if (index < 0 || index >= prescriptionList.size()) {
+            return null;
+        }
+        return prescriptionList.get(index);
     }
 }

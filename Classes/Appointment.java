@@ -1,12 +1,12 @@
 package Classes;
 
 public class Appointment {
-    private String appID;
-    private String patientName;
-    private String diagnosis;
-    private String doctorName;
-    private String appDate;
-    private String appTime;
+    private final String appID;
+    private final String patientName;
+    private final String diagnosis;
+    private final String doctorName;
+    private final String appDate;
+    private final String appTime;
 
     public Appointment(String appID, String patientName, String diagnosis, String doctorName, String appDate, String appTime) {
         this.appID = appID;

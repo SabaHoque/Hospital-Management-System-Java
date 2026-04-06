@@ -6,6 +6,7 @@ public interface IPList{
 	public abstract int searchPatient(String name);
 	public abstract void deletePatient(Patient p);
 	public abstract void updatePatient(String patientToUpdate, Patient updatedPatient);
+    Patient getPatient(int index);
 	
 	
 }

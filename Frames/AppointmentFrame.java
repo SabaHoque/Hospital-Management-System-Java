@@ -1,10 +1,9 @@
 package Frames;
 
-import java.lang.*;
-import javax.swing.*;
+import Classes.*;
 import java.awt.*;
 import java.awt.event.*;
-import Classes.*;
+import javax.swing.*;
 
 public class AppointmentFrame extends JFrame implements MouseListener, ActionListener {
 
@@ -16,9 +15,9 @@ public class AppointmentFrame extends JFrame implements MouseListener, ActionLis
     JComboBox<String> doctorNameCB;
     JPanel panel;
     ImageIcon img, icon;
-    AppointmentList al;
+    AppointmentList appointmentList;
 
-    public AppointmentFrame(AppointmentList al) {
+    public AppointmentFrame() {
         super("HealthMate - Book Appointment");
         this.setSize(900, 600);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -26,7 +25,7 @@ public class AppointmentFrame extends JFrame implements MouseListener, ActionLis
         icon = new ImageIcon("images/icon.png");
         this.setIconImage(icon.getImage());
 
-        this.al = al;
+        appointmentList = AppointmentList.getInstance();
 
         color1 = new Color(143, 207, 225);
         color2 = new Color(4, 196, 95);
@@ -51,9 +50,9 @@ public class AppointmentFrame extends JFrame implements MouseListener, ActionLis
         appIdLabel.setBounds(75, 140, 150, 30);
         panel.add(appIdLabel);
 
-        appIdTF = new JLabel("A-" + (5000 + al.appCount));
+        // FIXED: Use list size for approximate ID
+        appIdTF = new JLabel("A-" + (5000 + appointmentList.getInstance().getAllItemsSize()));
         appIdTF.setBounds(230, 140, 200, 30);
-        //appIdTF.setEditable(false);
         panel.add(appIdTF);
 
         patientNameLabel = new JLabel("Patient Name: ");
@@ -76,7 +75,7 @@ public class AppointmentFrame extends JFrame implements MouseListener, ActionLis
         doctorNameLabel.setBounds(75, 260, 150, 30);
         panel.add(doctorNameLabel);
 
-        RegDoctorList rdl = new RegDoctorList();
+        RegDoctorList rdl = RegDoctorList.getInstance();
         String[] DrL = rdl.getDoctorNames();
         doctorNameCB = new JComboBox<>(DrL);
         doctorNameCB.setBounds(230, 260, 200, 30);
@@ -125,9 +124,13 @@ public class AppointmentFrame extends JFrame implements MouseListener, ActionLis
         this.add(panel);
     }
 
+    @Override
     public void mouseClicked(MouseEvent me) {}
+    @Override
     public void mousePressed(MouseEvent me) {}
+    @Override
     public void mouseReleased(MouseEvent me) {}
+    @Override
     public void mouseEntered(MouseEvent me) {
         if (me.getSource() == add) {
             add.setBackground(color2);
@@ -137,6 +140,7 @@ public class AppointmentFrame extends JFrame implements MouseListener, ActionLis
             backBtn.setForeground(Color.BLACK);
         }
     }
+    @Override
     public void mouseExited(MouseEvent me) {
         if (me.getSource() == add) {
             add.setBackground(color2);
@@ -147,8 +151,8 @@ public class AppointmentFrame extends JFrame implements MouseListener, ActionLis
         }
     }
 
+    @Override
     public void actionPerformed(ActionEvent ae) {
-        String command = ae.getActionCommand();
         if (ae.getSource() == backBtn) {
             Menu me = new Menu();
             me.setVisible(true);
@@ -161,19 +165,16 @@ public class AppointmentFrame extends JFrame implements MouseListener, ActionLis
             String appDate = appDateTF.getText();
             String appTime = appTimeTF.getText();
 
-            if (!appId.isEmpty() && !patientName.isEmpty() && !diagnosis.isEmpty() && !doctorName.isEmpty() && !appDate.isEmpty() && !appTime.isEmpty()) {
+            if (!appId.isEmpty() && !patientName.isEmpty() && !diagnosis.isEmpty() && 
+                !doctorName.isEmpty() && !appDate.isEmpty() && !appTime.isEmpty()) {
+
                 Appointment appointment = new Appointment(appId, patientName, diagnosis, doctorName, appDate, appTime);
-                al.addAppointment(appointment);
+                appointmentList.addAppointment(appointment);
+
                 JOptionPane.showMessageDialog(this, "Appointment added successfully!");
             } else {
                 JOptionPane.showMessageDialog(this, "You cannot leave any field empty!");
             }
         }
-    }
-
-    public static void main(String[] args) {
-        AppointmentList al = new AppointmentList();
-        AppointmentFrame frame = new AppointmentFrame(al);
-        frame.setVisible(true);
     }
 }

@@ -155,7 +155,7 @@ public class WritePres extends JFrame implements ActionListener {
 
     private void searchPatient() {
         String id = srchTF.getText();
-        PList pl = new PList();
+        PList pl = PList.getInstance();
         if (!id.isEmpty()) {
             int index = pl.searchPatient(id);
             if (index == -1) {

@@ -1,9 +1,8 @@
 package Frames;
-import java.lang.*;
-import javax.swing.*;
+import Classes.*;
 import java.awt.*;
 import java.awt.event.*;
-import Classes.*;
+import javax.swing.*;
 
 public class UpPatient extends JFrame implements MouseListener, ActionListener{
 	JLabel hosLabel, upLabel, imgLabel, srchLabel;
@@ -143,7 +142,7 @@ public class UpPatient extends JFrame implements MouseListener, ActionListener{
 
 		}else if(srchBtn.getText().equals(command)){
 			String name = srchTF.getText ();
-			PList pl = new PList();
+			PList pl = PList.getInstance();
 			if(!name.isEmpty()){
 				int index = pl.searchPatient(name);
 			if(index == -1){

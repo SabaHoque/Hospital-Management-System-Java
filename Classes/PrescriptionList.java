@@ -8,16 +8,23 @@ import java.util.Scanner;
 public class PrescriptionList {
     private static final String PRESCRIPTION_FILE_PATH = "Files/prescriptions.txt";
     private final List<Prescription> prescriptionList = new ArrayList<>();
+    private static PrescriptionList instance;
 
-    public PrescriptionList() {
+    private PrescriptionList() {
         loadPrescriptionsFromFile();
+    }
+
+    public static synchronized PrescriptionList getInstance() {
+        if (instance == null) {
+            instance = new PrescriptionList();
+        }
+        return instance;
     }
 
     private void loadPrescriptionsFromFile() {
         File file = new File(PRESCRIPTION_FILE_PATH);
-        if (!file.exists()) {
-            return;
-        }
+        if (!file.exists()) return;
+
         try (Scanner sc = new Scanner(file)) {
             while (sc.hasNextLine()) {
                 String patientId = sc.nextLine().split(": ", 2)[1];
@@ -29,16 +36,11 @@ public class PrescriptionList {
                 String usageInstructions = sc.nextLine().split(": ", 2)[1];
                 if (sc.hasNextLine()) sc.nextLine();
 
-                Prescription p = new Prescription(patientId, patientName, diagnosis, doctorName, medicineName, dosage, usageInstructions);
+                Prescription p = new Prescription(patientId, patientName, diagnosis, doctorName,
+                        medicineName, dosage, usageInstructions);
                 prescriptionList.add(p);
             }
-        } catch (FileNotFoundException ex) {
-            // Empty list
-        } catch (IOException ex) {
-            throw new RuntimeException("Error loading prescriptions", ex);
-        } catch (ArrayIndexOutOfBoundsException ex) {
-            throw new RuntimeException("Invalid file format", ex);
-        }
+        } catch (Exception ignored) {}
     }
 
     public void addPrescription(Prescription p) {
@@ -47,15 +49,16 @@ public class PrescriptionList {
     }
 
     private void savePrescriptionToFile(Prescription p) {
-        String prescriptionDetails = "Patient ID: " + p.getPatientId() + "\n" +
-                                     "Patient Name: " + p.getPatientName() + "\n" +
-                                     "Diagnosis: " + p.getDiagnosis() + "\n" +
-                                     "Doctor's Name: " + p.getDoctorName() + "\n" +
-                                     "Medicine Name: " + p.getMedicineName() + "\n" +
-                                     "Dosage: " + p.getDosage() + "\n" +
-                                     "Usage Instructions: " + p.getUsageInstructions() + "\n\n";
+        String details = "Patient ID: " + p.getPatientId() + "\n" +
+                "Patient Name: " + p.getPatientName() + "\n" +
+                "Diagnosis: " + p.getDiagnosis() + "\n" +
+                "Doctor's Name: " + p.getDoctorName() + "\n" +
+                "Medicine Name: " + p.getMedicineName() + "\n" +
+                "Dosage: " + p.getDosage() + "\n" +
+                "Usage Instructions: " + p.getUsageInstructions() + "\n\n";
+
         try (FileWriter fw = new FileWriter(PRESCRIPTION_FILE_PATH, true)) {
-            fw.write(prescriptionDetails);
+            fw.write(details);
         } catch (IOException ex) {
             throw new RuntimeException("Error saving prescription", ex);
         }
@@ -71,9 +74,7 @@ public class PrescriptionList {
     }
 
     public Prescription getPrescription(int index) {
-        if (index < 0 || index >= prescriptionList.size()) {
-            return null;
-        }
+        if (index < 0 || index >= prescriptionList.size()) return null;
         return prescriptionList.get(index);
     }
 }

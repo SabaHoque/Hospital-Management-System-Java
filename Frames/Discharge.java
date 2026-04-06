@@ -193,7 +193,7 @@ public class Discharge extends JFrame  implements  ActionListener  {
 	
    }
  /*  public static void main (String []args){
-		PList pl = new PList(); 
+		PList pl = PList.getInstance(); 
     	Patient p = new Patient(); 
     	Discharge up = new Discharge(p, pl);
 		up.setVisible(true);

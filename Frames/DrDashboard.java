@@ -1,12 +1,10 @@
 package Frames;
-import java.lang.*;
-import javax.swing.*;
-import javax.swing.border.Border;
+import Classes.*;
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.table.*;
 import java.io.*;
-import Classes.*;
+import javax.swing.*;
+import javax.swing.table.*;
 
 public class DrDashboard extends JFrame implements ActionListener {
     
@@ -31,7 +29,7 @@ public class DrDashboard extends JFrame implements ActionListener {
         this.d = d;
         this.rdl = rdl;
         
-        color1= new Color(143, 207, 225);
+        color1 = new Color(143, 207, 225);
         color2 = new Color(182, 224, 232);
         
         font1 = new Font("Biome", Font.BOLD, 30);
@@ -47,7 +45,7 @@ public class DrDashboard extends JFrame implements ActionListener {
         
         userLabel = new JLabel("Doctor Dashboard");
         userLabel.setBounds(350, 55, 400, 50);
-        userLabel.setFont(font4);        
+        userLabel.setFont(font4);
         panel.add(userLabel);
         
         ptListLabel = new JLabel("Your patient list: ");
@@ -73,13 +71,12 @@ public class DrDashboard extends JFrame implements ActionListener {
         model.addColumn("Patient Name");
         model.addColumn("Room No");
         model.addColumn("Diagnosis");
-       // model.addColumn("Appointed Dr.");
         
-        PList ptList = new PList();
-        for (int i = 0; i < ptList.patientList.length; i++) {
-            Patient patient = ptList.patientList[i];
+        PList ptList = PList.getInstance();
+        for (int i = 0; i < ptList.getInstance().getAllItemsSize(); i++) {
+            Patient patient = ptList.getPatient(i);
             if (patient != null && patient.getAppointedDoctor().equals(dName)) {
-                model.addRow(new Object[]{patient.getId(), patient.getName(), patient.getRoom(), patient.getDiagnosis()}); //, patient.getAppointedDoctor()
+                model.addRow(new Object[]{patient.getId(), patient.getName(), patient.getRoom(), patient.getDiagnosis()});
             }
         }
         
@@ -123,20 +120,24 @@ public class DrDashboard extends JFrame implements ActionListener {
         this.add(panel);
     }
     
+    @Override
     public void actionPerformed(ActionEvent ae) {
         String dName = "Dr. " + d.getName();
+        
         if (ae.getSource() == exitBtn) {
             Login lg = new Login();
             lg.setVisible(true);
             this.setVisible(false);
-        } else if (ae.getSource() == dndBtn) {
+        }
+        else if (ae.getSource() == dndBtn) {
             JOptionPane.showMessageDialog(this, "Your patient list has downloaded. Check the Download folder");
-            PList ptList = new PList();
+            PList ptList = PList.getInstance();
             String PatList = "Your Patient List -- " + "\n" + "\n";
-            for (int i = 0; i < ptList.patientList.length; i++) {
-                Patient patient = ptList.patientList[i];
+            for (int i = 0; i < ptList.getInstance().getAllItemsSize(); i++) {
+                Patient patient = ptList.getPatient(i);
                 if (patient != null && patient.getAppointedDoctor() != null && patient.getAppointedDoctor().equals(dName)) {
-                    PatList += "Patient ID : " + patient.getId() + "\n" + "Patient Name : " + patient.getName() + "\n" + "Room NO : " + patient.getRoom() + "\n" + "Diagnosis : " + patient.getDiagnosis() + "\n" + "\n";
+                    PatList += "Patient ID : " + patient.getId() + "\n" + "Patient Name : " + patient.getName() + "\n" + 
+                                            "Room NO : " + patient.getRoom() + "\n" + "Diagnosis : " + patient.getDiagnosis() + "\n" + "\n";
                 }
             }
             try {
@@ -144,21 +145,21 @@ public class DrDashboard extends JFrame implements ActionListener {
                 fw.write("HealthMate" + "\n");
                 fw.write("--------------------------------------" + "\n");
                 fw.write("Date : " + "\n");
-                fw.write("Doctor Name : " + dName + "\n");    
-                fw.write("--------------------------------------" + "\n");            
+                fw.write("Doctor Name : " + dName + "\n");
+                fw.write("--------------------------------------" + "\n");
                 fw.write(PatList);
                 fw.close();
             } catch (Exception ex) {
                 System.out.println(ex);
             }
-        } else if (ae.getSource() == presBtn) {
+        } 
+        else if (ae.getSource() == presBtn) {
             WritePres form = new WritePres();
             form.setVisible(true);
             this.setVisible(false);
         }
         else if (ae.getSource() == appBtn) {
-            AppointmentList al = new AppointmentList();
-            ViewAppointments frame = new ViewAppointments(al);
+            ViewAppointments frame = new ViewAppointments();
             frame.setVisible(true);
             this.setVisible(false);
         }

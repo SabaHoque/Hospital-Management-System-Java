@@ -1,13 +1,10 @@
 package Frames;
 
-import java.lang.*;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import Classes.*;
+import java.awt.*;
+import javax.swing.*;
 
-public class PrescriptionView extends JFrame implements ActionListener {
+public class PrescriptionView extends JFrame {
 
     JLabel nameLabel, pfLabel, srchLabel, ptNameLabel, diagLabel, drNameLabel, medNameLabel, doseLabel, usageLabel;
     JLabel ptNameValue, diagValue, drNameValue, medNameValue, doseValue, usageValue;
@@ -24,7 +21,7 @@ public class PrescriptionView extends JFrame implements ActionListener {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
         icon = new ImageIcon("images/icon.png");
-		this.setIconImage(icon.getImage());
+        this.setIconImage(icon.getImage());
 
         font1 = new Font("Biome", Font.BOLD, 30);
         font2 = new Font("Biome", Font.BOLD, 18);
@@ -62,7 +59,7 @@ public class PrescriptionView extends JFrame implements ActionListener {
         searchBtn.setBorder(null);
         searchBtn.setBackground(color1);
         searchBtn.setForeground(Color.RED);
-        searchBtn.addActionListener(this);
+        searchBtn.addActionListener(e -> searchPrescription());
         panel.add(searchBtn);
 
         ptNameLabel = new JLabel("Patient Name: ");
@@ -123,7 +120,7 @@ public class PrescriptionView extends JFrame implements ActionListener {
         backBtn.setBounds(260, 470, 100, 30);
         backBtn.setBackground(Color.BLACK);
         backBtn.setForeground(Color.WHITE);
-        backBtn.addActionListener(this);  
+        backBtn.addActionListener(e -> goBack());
         panel.add(backBtn);
 
         img = new ImageIcon("images/dis.png");
@@ -135,18 +132,9 @@ public class PrescriptionView extends JFrame implements ActionListener {
         this.add(panel);
     }
 
-   // @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == searchBtn) {
-            searchPrescription();
-        } else if (e.getSource() == backBtn) {
-            goBack();
-        }
-    }
-
     private void searchPrescription() {
         String patientId = srchTF.getText();
-        PrescriptionList pl = new PrescriptionList();
+        PrescriptionList pl = PrescriptionList.getInstance();   // FIXED
         if (!patientId.isEmpty()) {
             int index = pl.searchPrescription(patientId);
             if (index == -1) {
@@ -167,10 +155,5 @@ public class PrescriptionView extends JFrame implements ActionListener {
         Menu menu = new Menu();
         menu.setVisible(true);
         this.setVisible(false);
-    }
-
-    public static void main(String[] args) {
-        PrescriptionView frame = new PrescriptionView();
-        frame.setVisible(true);
     }
 }

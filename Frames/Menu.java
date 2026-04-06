@@ -1,10 +1,10 @@
 package Frames;
 
-import java.lang.*;
-import javax.swing.*;
+import Classes.*;
 import java.awt.*;
 import java.awt.event.*;
-import Classes.*;
+import java.lang.*;
+import javax.swing.*;
 
 public class Menu extends JFrame implements MouseListener,ActionListener{
 	JLabel nameLabel, titleLabel, imgLabel, userLabel, sumLabel, tAddLabel, tDisLabel, tDrLabel;
@@ -132,9 +132,13 @@ public class Menu extends JFrame implements MouseListener,ActionListener{
 		panel.setBackground(color1);
 		this.add(panel);
 	}
+        @Override
 	public void mouseClicked(MouseEvent me){}
+        @Override
 	public void mousePressed(MouseEvent me){}
+        @Override
 	public void mouseReleased(MouseEvent me){}
+        @Override
 	public void mouseEntered(MouseEvent me){
 		if(me.getSource() == npBtn){
 			npBtn.setBackground(color2);
@@ -182,7 +186,7 @@ public class Menu extends JFrame implements MouseListener,ActionListener{
 	public void actionPerformed(ActionEvent ae){
 		String command = ae.getActionCommand();
 		if (ae.getSource() == npBtn) {
-			PList pl = new PList();
+			PList pl = PList.getInstance();
 			AddPatient ap = new AddPatient(pl);
 			ap.setVisible(true);
 			this.setVisible(false);
@@ -207,16 +211,13 @@ public class Menu extends JFrame implements MouseListener,ActionListener{
 			PrescriptionView co = new PrescriptionView();
 			co.setVisible(true);
 			this.setVisible(false);
-		}
-		else if (ae.getSource() == bookApp) {
-			AppointmentList al = new AppointmentList();
-            AppointmentFrame co = new AppointmentFrame(al); 
-			co.setVisible(true);
-			this.setVisible(false);
-		}
-		else if (ae.getSource() == viewApp) {
-            AppointmentList al = new AppointmentList();
-            ViewAppointments frame = new ViewAppointments(al);
+		        } else if (ae.getSource() == bookApp) {
+            AppointmentFrame co = new AppointmentFrame();   // No parameter needed now
+            co.setVisible(true);
+            this.setVisible(false);
+        }
+        else if (ae.getSource() == viewApp) {
+            ViewAppointments frame = new ViewAppointments();   // Fixed
             frame.setVisible(true);
             this.setVisible(false);
         }
@@ -229,7 +230,7 @@ public class Menu extends JFrame implements MouseListener,ActionListener{
 				li.setVisible(true);
 				this.setVisible(false);
 			} else{
-				//kicu hbe na
+				
 			}
 					
 		}

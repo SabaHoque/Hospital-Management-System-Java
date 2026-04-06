@@ -1,9 +1,9 @@
 package Frames;
-import javax.swing.*;
+import Classes.*;
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.*;
 import javax.swing.table.*;
-import Classes.*;
 
 public class DoctorList extends JFrame implements ActionListener {
 
@@ -23,7 +23,7 @@ public class DoctorList extends JFrame implements ActionListener {
         this.setLocationRelativeTo(null);
 
         color1 = new Color(143, 207, 225);
-		color2 = new Color(182, 224, 232);
+        color2 = new Color(182, 224, 232);
 
         font1 = new Font("Biome", Font.BOLD, 30);
         font4 = new Font("Biome", Font.BOLD, 18);
@@ -41,30 +41,24 @@ public class DoctorList extends JFrame implements ActionListener {
         userLabel.setFont(font4);
         panel.add(userLabel);
 
-		model = new DefaultTableModel();
+        model = new DefaultTableModel();
         table = new JTable(model);
-		table.setBackground(color2);
-		//table.setSelectionBackground(new Color(255, 153, 255));
-		table.setFont(new Font("Times New Roman", Font.BOLD, 16));
-		//table.setBackground(new Color(182, 224, 232));
-		
-       
-		model.addColumn("Doctor ID");
+        table.setBackground(color2);
+        table.setFont(new Font("Times New Roman", Font.BOLD, 16));
+
+        model.addColumn("Doctor ID");
         model.addColumn("Name");
         model.addColumn("Department");
 
-        RegDoctorList regDoctorList = new RegDoctorList();
-		//String title = new String ("Dr. ");
-		String title = "Dr. ";
-        for(int i = 0; i < regDoctorList.doctorList.length; i++){
-			Doctor doctor = regDoctorList.doctorList[i]; {
+        RegDoctorList regDoctorList = RegDoctorList.getInstance();
+
+        for(int i = 0; i < regDoctorList.getInstance().getAllItemsSize(); i++){
+            Doctor doctor = regDoctorList.getDoctor(i);
             if (doctor != null) {
-                model.addRow(new Object[]{doctor.getId(), title + doctor.getName(), doctor.getDepartment()});
+                model.addRow(new Object[]{doctor.getId(), "Dr. " + doctor.getName(), doctor.getDepartment()});
             }
         }
-        }
 
-        
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBounds(70, 150, 750, 270);
         panel.add(scrollPane);
@@ -87,10 +81,5 @@ public class DoctorList extends JFrame implements ActionListener {
             me.setVisible(true);
             this.setVisible(false);
         }
-    }
-
-    public static void main(String[] args) {
-        DoctorList doctorList = new DoctorList();
-        doctorList.setVisible(true);
     }
 }

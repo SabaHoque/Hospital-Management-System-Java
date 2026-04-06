@@ -200,13 +200,13 @@ public class Login extends JFrame implements MouseListener, ActionListener{
 		      }
 		    }
 				if(ae.getSource() == signUpBtn) {
-					RegDoctorList rdl = new RegDoctorList();
+					RegDoctorList rdl = RegDoctorList.getInstance();
 					AddDoctor ad = new AddDoctor(rdl);
 					ad.setVisible(true);
 					this.setVisible(false);
 				}
    		else if(ae.getSource() == signInBtn) {
-					RegDoctorList rdl = new RegDoctorList();
+					RegDoctorList rdl = RegDoctorList.getInstance();
 					DrLogin dln = new DrLogin(rdl);
 					dln.setVisible(true);
 					this.setVisible(false);

@@ -1,10 +1,9 @@
 package Frames;
 
-import java.lang.*;
-import javax.swing.*;
+import Classes.*;
 import java.awt.*;
 import java.awt.event.*;
-import Classes.*;
+import javax.swing.*;
 
 public class Update extends JFrame implements MouseListener, ActionListener{
 	JLabel  hosLabel, pafLabel,pIdLabel, pnLabel, mbLabel, genLabel, ageLabel, addLabel, refLabel, appLabel, roomLabel, disLabel, depLabel, imgLabel;
@@ -125,7 +124,7 @@ public class Update extends JFrame implements MouseListener, ActionListener{
 		appLabel.setBounds(75,310,90,20);
 		panel.add(appLabel);
 			
-		RegDoctorList rdl = new RegDoctorList();		
+		RegDoctorList rdl = RegDoctorList.getInstance();		
 		String DrL[] = rdl.getDoctorNames();
 		 b1 = new JComboBox(DrL);
 		 b1.setBounds(175,310,200,20);

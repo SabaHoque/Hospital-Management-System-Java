@@ -1,10 +1,9 @@
 package Frames;
 
-import java.lang.*;
-import javax.swing.*;
+import Classes.*;
 import java.awt.*;
 import java.awt.event.*;
-import Classes.*;
+import javax.swing.*;
 
 
 public class PtDischarge extends JFrame  implements  ActionListener  {
@@ -165,7 +164,7 @@ public class PtDischarge extends JFrame  implements  ActionListener  {
 		} 
 			else if(srchBtn.getText().equals(command)){
 			String id = srchTF.getText ();
-			PList pl = new PList();
+			PList pl = PList.getInstance();
 			if(!id.isEmpty()){
 				int index = pl.searchPatient(id);
 			if(index == -1){

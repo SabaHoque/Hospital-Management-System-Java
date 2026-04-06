@@ -1,14 +1,12 @@
 package Frames;
 
-import java.lang.*;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import Classes.*;
+import javax.swing.*;
 
 public class Contribution extends JFrame implements ActionListener{
 	
-	JLabel userLabel, passLabel, imgLabel;
+	JLabel imgLabel;
 	JButton bckBtn;
 	Color color1;
 	Font font1, font4;
@@ -49,6 +47,7 @@ public class Contribution extends JFrame implements ActionListener{
 		this.add(panel);
 	}
 	
+        @Override
 	public void actionPerformed(ActionEvent ae){
 		String command = ae.getActionCommand();
 		if (ae.getSource() == bckBtn) {

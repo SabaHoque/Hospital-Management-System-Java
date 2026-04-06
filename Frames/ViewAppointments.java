@@ -1,13 +1,10 @@
 package Frames;
 
-import java.lang.*;
-import javax.swing.*;
-import javax.swing.border.Border;
+import Classes.*;
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.*;
 import javax.swing.table.*;
-import java.io.*;
-import Classes.*;
 
 public class ViewAppointments extends JFrame implements ActionListener {
     
@@ -19,16 +16,17 @@ public class ViewAppointments extends JFrame implements ActionListener {
     JPanel panel;
     JTable table;
     DefaultTableModel model;
-    AppointmentList al;
+    AppointmentList appointmentList;
 
-    public ViewAppointments(AppointmentList al) {
+    public ViewAppointments() {
         super("HealthMate - View Appointments");
         this.setSize(900, 600);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
         img = new ImageIcon("images/emp-info.png");
         this.setIconImage(img.getImage());
-        this.al = al;
+
+        appointmentList = AppointmentList.getInstance();
 
         color1 = new Color(143, 207, 225);
         color2 = new Color(182, 224, 232);
@@ -61,8 +59,9 @@ public class ViewAppointments extends JFrame implements ActionListener {
         model.addColumn("Appointment Date");
         model.addColumn("Appointment Time");
 
-        for (int i = 0; i < al.appointmentList.length; i++) {
-            Appointment appointment = al.appointmentList[i];
+        // FIXED: Use public get() method
+        for (int i = 0; i < appointmentList.getInstance().getAllItemsSize(); i++) {
+            Appointment appointment = appointmentList.get(i);
             if (appointment != null) {
                 model.addRow(new Object[]{
                     appointment.getAppId(), 
@@ -97,11 +96,5 @@ public class ViewAppointments extends JFrame implements ActionListener {
             menu.setVisible(true);
             this.setVisible(false);
         }
-    }
-
-    public static void main(String[] args) {
-        AppointmentList al = new AppointmentList();
-        ViewAppointments frame = new ViewAppointments(al);
-        frame.setVisible(true);
     }
 }

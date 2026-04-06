@@ -18,12 +18,12 @@ public class DrMenu extends JFrame {
         addDoctorButton.setBackground(Color.BLACK);
         addDoctorButton.setForeground(Color.WHITE);
         addDoctorButton.setFont(new Font("Cascadia Code SemiBold", Font.PLAIN, 16));
+        DoctorMenuAdapter adapter = new DoctorMenuAdapter();
+
         addDoctorButton.addActionListener(e -> {
-        IDoctorService doctorService = new DoctorService(); // Use the service
-        AddDoctorUI addDoctorUI = new AddDoctorUI(doctorService);
-        addDoctorUI.setVisible(true);
-        this.setVisible(false); // Hide menu while AddDoctor form is open
-});
+            adapter.openAddDoctorUI();
+            this.setVisible(false);
+        });
 
         
     }

@@ -1,4 +1,3 @@
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -17,6 +16,10 @@ public class AddDoctorUI extends JFrame {
         super("Add Doctor Form");
         this.doctorService = doctorService;
 
+        // Behavioral Design Pattern: Observer
+        DoctorService service = new DoctorService();
+        service.addObserver(new DoctorNotification());
+
         setSize(900, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -31,7 +34,6 @@ public class AddDoctorUI extends JFrame {
 
         Font labelFont = new Font("Cascadia Code SemiBold", Font.PLAIN, 18);
 
-        // Labels & TextFields
         JLabel titleLabel = new JLabel("Add Doctor Form");
         titleLabel.setBounds(130, 20, 300, 40);
         titleLabel.setFont(new Font("Biome", Font.BOLD, 30));
@@ -63,9 +65,11 @@ public class AddDoctorUI extends JFrame {
         maleRB = new JRadioButton("Male");
         maleRB.setBounds(150, 160, 80, 25);
         maleRB.setBackground(panel.getBackground());
+
         femaleRB = new JRadioButton("Female");
         femaleRB.setBounds(230, 160, 80, 25);
         femaleRB.setBackground(panel.getBackground());
+
         otherRB = new JRadioButton("Other");
         otherRB.setBounds(310, 160, 80, 25);
         otherRB.setBackground(panel.getBackground());
@@ -125,7 +129,6 @@ public class AddDoctorUI extends JFrame {
         bmdcTF.setBounds(200, 360, 150, 25);
         panel.add(bmdcTF);
 
-        // Buttons
         addButton = new JButton("ADD");
         addButton.setBounds(500, 470, 100, 40);
         addButton.setBackground(Color.GREEN);
@@ -154,7 +157,13 @@ public class AddDoctorUI extends JFrame {
         String room = roomTF.getText();
         String bmdc = bmdcTF.getText();
 
-        Doctor doctor = new Doctor(name, mobile, gender, department, joiningDate, salary, room, bmdc);
+        DoctorFactory factory = new DoctorFactory();
+
+        Doctor doctor = factory.createDoctor(
+            name, mobile, gender, department,
+            joiningDate, salary, room, bmdc
+        );
+
         doctorService.addDoctor(doctor);
 
         JOptionPane.showMessageDialog(this, "Doctor added successfully!");
@@ -163,7 +172,7 @@ public class AddDoctorUI extends JFrame {
 
     private void onBack() {
         this.setVisible(false);
-        DrMenu dm = new DrMenu(); // Navigation to main menu
+        DrMenu dm = new DrMenu();
         dm.setVisible(true);
     }
 
